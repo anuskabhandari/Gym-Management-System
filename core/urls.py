@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 from member.api.views import membercreate, memberdelete, memberupdate
 
@@ -24,7 +25,14 @@ from member.api.views import membercreate, memberdelete, memberupdate
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/member/', include('member.api.urls')),
-    path('create', membercreate, name="member-create"),
-    path('update/<int:id>', memberupdate, name="member-update"),
-    path('delete/<int:id>', memberdelete, name="member-delete"),
+    path('api/trainer/', include('trainer.api.urls')),
+
+    
+    # API documentation download garda
+     # YOUR PATTERNS
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    path('api/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+
 ]
