@@ -7,3 +7,4 @@ class TrainerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trainer
         fields = '__all__'
+        read_only = ['is_active']

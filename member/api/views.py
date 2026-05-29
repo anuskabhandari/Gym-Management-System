@@ -1,3 +1,5 @@
+from drf_spectacular.utils import extend_schema
+
 from member.models import Member
 from member.api.serializer import MemberSerializer
 from rest_framework.response import Response
@@ -9,7 +11,11 @@ def memberlist(request):
     data= Member.objects.all()
     serializer = MemberSerializer(data , many = True)
     return Response(serializer.data)
-
+@extend_schema(
+    request=MemberSerializer,
+    responses=MemberSerializer,
+    tags=["Test"]
+)
 @api_view(['POST'])
 def membercreate(request):
     post_data = request.data
@@ -22,7 +28,11 @@ def membercreate(request):
     else:
         return Response(serializer.errors,422)
     
-
+@extend_schema(
+    request=MemberSerializer,
+    responses=MemberSerializer,
+    tags=["Test"]
+)
 @api_view(['PUT'])
 def memberupdate(request,id):
     member = Member.objects.get(id=id)
