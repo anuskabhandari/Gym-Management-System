@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from member.models import Subscription
+from subscription.models import Subscription
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
