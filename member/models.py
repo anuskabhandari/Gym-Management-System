@@ -42,5 +42,5 @@ class Member(models.Model):
     class Meta:
         db_table = 'member'
 
-    def _str_(self):
+    def __str__(self):
         return self.first_name
