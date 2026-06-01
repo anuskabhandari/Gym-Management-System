@@ -19,6 +19,10 @@ from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 from member.api.views import membercreate, memberdelete, memberupdate
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 
 
@@ -27,6 +31,7 @@ urlpatterns = [
     path('api/member/', include('member.api.urls')),
     path('api/trainer/', include('trainer.api.urls')),
     path('api/subscription/', include('subscription.api.urls')),
+    path('api/attendance/', include('attendance.api.urls')),
 
     
     # API documentation download garda
@@ -35,5 +40,9 @@ urlpatterns = [
     # Optional UI:
     path('api/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+
+    #jwt token
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
 ]
