@@ -6,9 +6,12 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 
+from member.tasks import mark_all_member_active
+ 
 @api_view(['GET'])
 def memberlist(request):
     data= Member.objects.all()
+    mark_all_member_active.delay()
     serializer = MemberSerializer(data , many = True)
     return Response(serializer.data)
 @extend_schema(

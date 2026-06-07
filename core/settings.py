@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
+
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,6 +43,7 @@ INSTALLED_APPS = [
     # third-party app
     'rest_framework',
     'drf_spectacular',
+    'django_celery_beat',
 
     # project app
     'member',
@@ -115,7 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kathmandu'
 
 USE_I18N = True
 
@@ -143,4 +147,39 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     # OTHER SETTINGS
+}
+
+
+# Celery Configuration Options
+CELERY_TIMEZONE = "Asia/Kathmandu"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+# settings.py
+
+FLOWER_URL = "http://localhost:5555"
+FLOWER_URL_PREFIX = "flower"
+
+CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672//" #Default RabbitMQ URL
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    'add_today_attendance': {
+        'task': 'attendance.tasks.add_attendance',
+        'schedule': crontab(
+            hour=6,
+            minute=0,
+            day_of_week='0-5'  # Sunday to Friday
+        ),
+    },
+
+    'mark_attendance': {
+        'task': 'attendance.tasks.mark_member_attendance',
+        'schedule': crontab(
+            hour=22,
+            minute=0,
+            day_of_week='0-5'  # Sunday to Friday
+        ),
+    },
 }
