@@ -22,6 +22,7 @@ def add_attendance():
 @shared_task
 def mark_member_attendance():
     attendance = Attendance.objects.all()
+     # decrease the day from subscription
     for i in attendance:
         if i.check_in:
             i.is_present = True
