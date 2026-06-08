@@ -2,8 +2,12 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from subscription.api.serializer import GymMembershipSerializer, SubscriptionSerializer
+from subscription.api.service import khalti_payment
 from subscription.models import GymMembership, Subscription
 from txn.models import TXN
+from txn.models import TXN, Status
+from django.db import transaction
+
 
 class SubscriptionView(GenericAPIView):
     queryset = Subscription.objects.all()
@@ -84,21 +88,25 @@ class GymMemeberView(GenericAPIView):
         else:
             return Response(serializer.errors, 422)    
 
-
 class MembershipPayment(GenericAPIView):
-   queryset = GymMembership.objects.all()
-   serializer_class = []
+    queryset = GymMembership.objects.all()
+    serializer_class = []
 
-   def get(self,request,id):
+    @transaction.atomic
+    def get(self, request, id):
         data = GymMembership.objects.get(id=id)
+
         txn = TXN.objects.create(
-            member = data.member,
-            name = f'{data.member.first_name}-"Upgrade"',
-            amount = data.price
+            member=data.member,
+            name=f"{data.member.first_name}-Upgrade",
+            amount=data.price
         )
-        return Response({
-            "paymnet sucess":"True"
-        })
 
+        result = khalti_payment(data.member, txn)
 
+        if 'error' not in result:
+            txn.pidx = result['pidx']
+            txn.status = Status.KHALTI_PROCESS
+            txn.save()
 
+        return Response(result)
