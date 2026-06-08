@@ -33,8 +33,8 @@ urlpatterns = [
     path('api/subscription/', include('subscription.api.urls')),
     path('api/attendance/', include('attendance.api.urls')),
     path('api/user/', include('user.api.urls')),
-
-
+    path('api/exercise/', include('exercise.api.urls')),
+  
     
     # API documentation download garda
      # YOUR PATTERNS
